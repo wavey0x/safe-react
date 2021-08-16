@@ -12,6 +12,7 @@ import GnoForm from 'src/components/forms/GnoForm'
 import Hairline from 'src/components/layout/Hairline'
 import { history } from 'src/store'
 import { LoadFormValues } from 'src/routes/load/container/Load'
+import { unstable_batchedUpdates } from 'react-dom'
 
 const transitionProps = {
   timeout: {
@@ -62,6 +63,10 @@ const getPageProps = (pages, page: number) => {
   return (aux as React.ReactElement).props
 }
 
+const isLastPage = (pageNumber: number, steps: number): boolean => {
+  return pageNumber === steps - 1
+}
+
 function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   const [page, setPage] = useState(0)
   const [values, setValues] = useState({})
@@ -74,22 +79,19 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
       })
     }
   }, [props.initialValues])
-  const updateInitialProps = useCallback((newInitialProps) => {
-    setValues(newInitialProps)
-  }, [])
 
   const getActivePageFrom = (pages) => {
     const activePageProps = getPageProps(pages, page)
     const { component, ...restProps } = activePageProps
 
-    return component({ ...restProps, updateInitialProps })
+    return component({ ...restProps, updateInitialProps: setValues })
   }
 
-  const validate = (valuesToValidate) => {
+  const validate = (values) => {
     const { children } = props
 
     const activePage: any = React.Children.toArray(children)[page]
-    return activePage.props.validate ? activePage.props.validate(valuesToValidate) : {}
+    return activePage.props.validate ? activePage.props.validate(values) : {}
   }
 
   const next = async (formValues) => {
@@ -104,8 +106,10 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
 
     const finalValues = { ...formValues, ...pageInitialProps }
 
-    setValues(finalValues)
-    setPage(Math.min(page + 1, React.Children.count(children) - 1))
+    unstable_batchedUpdates(() => {
+      setValues(finalValues)
+      setPage(Math.min(page + 1, React.Children.count(children) - 1))
+    })
   }
 
   const previous = () => {
@@ -127,16 +131,11 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     return next(formValues)
   }
 
-  const isLastPage = (pageNumber: number): boolean => {
-    const { steps } = props
-    return pageNumber === steps.length - 1
-  }
-
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
   const activePage = getActivePageFrom(children)
 
-  const lastPage = isLastPage(page)
-  const penultimate = isLastPage(page + 1)
+  const lastPage = isLastPage(page, props.steps.length)
+  const penultimate = isLastPage(page + 1, props.steps.length)
 
   return (
     <>

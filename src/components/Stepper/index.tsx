@@ -83,6 +83,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   const getActivePageFrom = (pages) => {
     const activePageProps = getPageProps(pages, page)
     const { component, ...restProps } = activePageProps
+    console.log('getting active page)')
 
     return component({ ...restProps, updateInitialProps: setValues })
   }
@@ -106,10 +107,8 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
 
     const finalValues = { ...formValues, ...pageInitialProps }
 
-    unstable_batchedUpdates(() => {
-      setValues(finalValues)
-      setPage(Math.min(page + 1, React.Children.count(children) - 1))
-    })
+    setValues(finalValues)
+    setPage(Math.min(page + 1, React.Children.count(children) - 1))
   }
 
   const previous = () => {
@@ -138,56 +137,54 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   const penultimate = isLastPage(page + 1, props.steps.length)
 
   return (
-    <>
-      <GnoForm
-        formMutators={mutators}
-        initialValues={values}
-        onSubmit={handleSubmit}
-        testId={testId}
-        validation={validate}
-      >
-        {(submitting, validating, ...rest) => {
-          const disabled = disabledWhenValidating ? submitting || validating : submitting
-          const controls = (
-            <>
-              <Hairline />
-              <Controls
-                buttonLabels={buttonLabels}
-                currentStep={page}
-                disabled={disabled}
-                firstPage={page === 0}
-                lastPage={lastPage}
-                onPrevious={previous}
-                penultimate={penultimate}
-              />
-            </>
-          )
+    <GnoForm
+      formMutators={mutators}
+      initialValues={values}
+      onSubmit={handleSubmit}
+      testId={testId}
+      validation={validate}
+    >
+      {(submitting, validating, ...rest) => {
+        const disabled = disabledWhenValidating ? submitting || validating : submitting
+        const controls = (
+          <>
+            <Hairline />
+            <Controls
+              buttonLabels={buttonLabels}
+              currentStep={page}
+              disabled={disabled}
+              firstPage={page === 0}
+              lastPage={lastPage}
+              onPrevious={previous}
+              penultimate={penultimate}
+            />
+          </>
+        )
 
-          return (
-            <Stepper activeStep={page} classes={{ root: classes.root }} orientation="vertical">
-              {steps.map((label, index) => {
-                const labelProps: any = {}
-                const isClickable = index < page
+        return (
+          <Stepper activeStep={page} classes={{ root: classes.root }} orientation="vertical">
+            {steps.map((label, index) => {
+              const labelProps: any = {}
+              const isClickable = index < page
 
-                if (isClickable) {
-                  labelProps.onClick = () => {
-                    setPage(index)
-                  }
-                  labelProps.className = classes.pointerCursor
+              if (isClickable) {
+                labelProps.onClick = () => {
+                  setPage(index)
                 }
-
-                return (
-                  <FormStep key={label}>
-                    <StepLabel {...labelProps}>{label}</StepLabel>
-                    <StepContent TransitionProps={transitionProps}>{activePage(controls, ...rest)}</StepContent>
-                  </FormStep>
-                )
-              })}
-            </Stepper>
-          )
-        }}
-      </GnoForm>
-    </>
+                labelProps.className = classes.pointerCursor
+              }
+              console.log('step render')
+              return (
+                <FormStep key={label}>
+                  <StepLabel {...labelProps}>{label}</StepLabel>
+                  <StepContent TransitionProps={transitionProps}>{activePage(controls, ...rest)}</StepContent>
+                </FormStep>
+              )
+            })}
+          </Stepper>
+        )
+      }}
+    </GnoForm>
   )
 }
 

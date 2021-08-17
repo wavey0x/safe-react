@@ -40,6 +40,7 @@ export type InitialValuesForm = {
 }
 
 const useInitialValuesFrom = (userAccount: string, safeProps?: SafeProps): InitialValuesForm => {
+  console.log('use initial values')
   const ownerName = useSelector((state) => addressBookEntryName(state, { address: userAccount }))
 
   if (!safeProps) {
@@ -92,7 +93,7 @@ type LayoutProps = {
 
 export const Layout = (props: LayoutProps): React.ReactElement => {
   const { onCallSafeContractSubmit, safeProps } = props
-
+  console.log('layout render')
   const provider = useSelector(providerNameSelector)
   const userAccount = useSelector(userAccountSelector)
 

@@ -62,6 +62,7 @@ function useWhyDidYouUpdate(name, props) {
 const ReviewComponent = (props: ReviewComponentProps): ReactElement => {
   const { values } = props
   const classes = useStyles()
+  // debugger
   useWhyDidYouUpdate('ReviewComponent', props)
 
   const names = getNamesFrom(values)

@@ -114,7 +114,7 @@ const useStyles = makeStyles(styles)
 const SafeOwnersForm = (props): React.ReactElement => {
   const { errors, form, values } = props
   const classes = useStyles()
-
+  console.log('owners form render')
   const validOwners = getNumOwnersFrom(values)
   const addressBook = useSelector(currentNetworkAddressBook)
 

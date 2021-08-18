@@ -12,7 +12,6 @@ import GnoForm from 'src/components/forms/GnoForm'
 import Hairline from 'src/components/layout/Hairline'
 import { history } from 'src/store'
 import { LoadFormValues } from 'src/routes/load/container/Load'
-import { unstable_batchedUpdates } from 'react-dom'
 
 const transitionProps = {
   timeout: {
@@ -95,20 +94,22 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     return activePage.props.validate ? activePage.props.validate(values) : {}
   }
 
-  const next = async (formValues) => {
+  const next = (formValues) => {
     const { children } = props
     const activePageProps = getPageProps(children, page)
     const { prepareNextInitialProps } = activePageProps
 
     let pageInitialProps
-    if (prepareNextInitialProps) {
-      pageInitialProps = await prepareNextInitialProps(formValues)
-    }
+    // if (prepareNextInitialProps) {
+    //   pageInitialProps = await prepareNextInitialProps(formValues)
+    // }
 
     const finalValues = { ...formValues, ...pageInitialProps }
 
     setValues(finalValues)
     setPage(Math.min(page + 1, React.Children.count(children) - 1))
+
+    // await sleep(5000)
   }
 
   const previous = () => {
@@ -126,8 +127,8 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     if (isLastPage) {
       return onSubmit(formValues)
     }
-
-    return next(formValues)
+    await next(formValues)
+    return
   }
 
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
@@ -145,6 +146,11 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
       validation={validate}
     >
       {(submitting, validating, ...rest) => {
+        console.log({ submitting, rest })
+        if (typeof submitting === 'undefined') {
+          return <div />
+        }
+
         const disabled = disabledWhenValidating ? submitting || validating : submitting
         const controls = (
           <>

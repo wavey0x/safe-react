@@ -2,6 +2,7 @@ import StepContent from '@material-ui/core/StepContent'
 import StepLabel from '@material-ui/core/StepLabel'
 import Step from '@material-ui/core/Step'
 import Stepper from '@material-ui/core/Stepper'
+import { makeStyles } from '@material-ui/core/styles'
 import { useFormState } from 'react-final-form'
 
 import Hairline from 'src/components/layout/Hairline'
@@ -20,9 +21,24 @@ type Props = {
   buttonLabels?: string[]
   steps: string[]
   onPageChange: (page: number) => void
+  penultimate: boolean
+  page: number
+  lastPage: boolean
+  onPrevious: () => void
+  activePage: any
 }
 
-function StepperContent({ disabledWhenValidating = false, onPageChange }: Props): React.ReactElement {
+function StepperContent({
+  disabledWhenValidating = false,
+  onPageChange,
+  steps,
+  penultimate,
+  page,
+  lastPage,
+  buttonLabels,
+  onPrevious,
+  activePage,
+}: Props): React.ReactElement {
   const { submitting, validating, ...rest } = useFormState()
   const classes = useStyles()
 
@@ -36,7 +52,7 @@ function StepperContent({ disabledWhenValidating = false, onPageChange }: Props)
         disabled={disabled}
         firstPage={page === 0}
         lastPage={lastPage}
-        onPrevious={previous}
+        onPrevious={onPrevious}
         penultimate={penultimate}
       />
     </>
@@ -58,7 +74,7 @@ function StepperContent({ disabledWhenValidating = false, onPageChange }: Props)
         return (
           <Step key={label}>
             <StepLabel {...labelProps}>{label}</StepLabel>
-            <StepContent TransitionProps={transitionProps}>{activePage(controls, ...rest)}</StepContent>
+            <StepContent TransitionProps={transitionProps}>{activePage(controls, rest)}</StepContent>
           </Step>
         )
       })}

@@ -1,9 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles'
 import React, { useEffect, useState } from 'react'
 import { FormApi } from 'final-form'
 
 import GnoForm from 'src/components/forms/GnoForm'
-import Hairline from 'src/components/layout/Hairline'
 import { history } from 'src/store'
 import { LoadFormValues } from 'src/routes/load/container/Load'
 import { StepperContent } from './StepperContent'
@@ -67,10 +65,9 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     }
   }, [props.initialValues])
 
-  const getActivePageFrom = (pages) => {
+  const getActivePageFrom = (pages, page) => {
     const activePageProps = getPageProps(pages, page)
     const { component, ...restProps } = activePageProps
-    console.log('getting active page)')
 
     return component({ ...restProps, updateInitialProps: setValues })
   }
@@ -98,7 +95,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     setPage(Math.min(page + 1, React.Children.count(children) - 1))
   }
 
-  const previous = () => {
+  const handleBackClick = () => {
     const firstPage = page === 0
     if (firstPage) {
       return history.goBack()
@@ -117,7 +114,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   }
 
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
-  const activePage = getActivePageFrom(children)
+  const activePage = getActivePageFrom(children, page)
 
   return (
     <GnoForm
@@ -132,6 +129,11 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
         buttonLabels={buttonLabels}
         onPageChange={setPage}
         steps={steps}
+        penultimate={penultimate}
+        page={page}
+        lastPage={lastPage}
+        onPrevious={handleBackClick}
+        activePage={activePage}
       />
     </GnoForm>
   )

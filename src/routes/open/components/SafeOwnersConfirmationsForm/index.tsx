@@ -40,6 +40,7 @@ import { getAccountsFrom } from 'src/routes/open/utils/safeDataExtractor'
 import { useSelector } from 'react-redux'
 import { currentNetworkAddressBook } from 'src/logic/addressBook/store/selectors'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
+import { useForm } from 'react-final-form'
 
 const { useState } = React
 
@@ -112,9 +113,9 @@ export const calculateValuesAfterRemoving = (index: number, values: Record<strin
 const useStyles = makeStyles(styles)
 
 const SafeOwnersForm = (props): React.ReactElement => {
-  const { errors, form, values } = props
+  const { errors, values } = props
   const classes = useStyles()
-  console.log('owners form render')
+  const form = useForm()
   const validOwners = getNumOwnersFrom(values)
   const addressBook = useSelector(currentNetworkAddressBook)
 

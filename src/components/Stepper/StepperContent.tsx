@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import StepContent from '@material-ui/core/StepContent'
 import StepLabel from '@material-ui/core/StepLabel'
 import Step from '@material-ui/core/Step'
@@ -39,9 +40,9 @@ function StepperContent({
   onPrevious,
   activePage,
 }: Props): React.ReactElement {
-  const { submitting, validating, ...rest } = useFormState()
-  const classes = useStyles()
-
+  const { submitting, submitSucceeded, validating, ...rest } = useFormState()
+  // const classes = useStyles()
+  console.log({ submitting, submitSucceeded })
   const disabled = disabledWhenValidating ? submitting || validating : submitting
   const controls = (
     <>
@@ -59,7 +60,7 @@ function StepperContent({
   )
 
   return (
-    <Stepper activeStep={page} classes={{ root: classes.root }} orientation="vertical">
+    <Stepper activeStep={page} orientation="vertical">
       {steps.map((label, index) => {
         const labelProps: { onClick?: () => void; className?: string } = {}
         const isClickable = index < page
@@ -68,9 +69,9 @@ function StepperContent({
           labelProps.onClick = () => {
             onPageChange(index)
           }
-          labelProps.className = classes.pointerCursor
+          // labelProps.className = classes.pointerCursor
         }
-        console.log('step render')
+
         return (
           <Step key={label}>
             <StepLabel {...labelProps}>{label}</StepLabel>

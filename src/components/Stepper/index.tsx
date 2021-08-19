@@ -1,25 +1,12 @@
-import FormStep from '@material-ui/core/Step'
-import StepContent from '@material-ui/core/StepContent'
-import StepLabel from '@material-ui/core/StepLabel'
-import Stepper from '@material-ui/core/Stepper'
 import { makeStyles } from '@material-ui/core/styles'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormApi } from 'final-form'
-
-import Controls from './Controls'
 
 import GnoForm from 'src/components/forms/GnoForm'
 import Hairline from 'src/components/layout/Hairline'
 import { history } from 'src/store'
 import { LoadFormValues } from 'src/routes/load/container/Load'
-
-const transitionProps = {
-  timeout: {
-    enter: 350,
-    exit: 0,
-  },
-}
-
+import { StepperContent } from './StepperContent'
 export interface StepperPageFormProps {
   values: LoadFormValues
   errors: Record<string, string>
@@ -69,7 +56,8 @@ const isLastPage = (pageNumber: number, steps: number): boolean => {
 function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   const [page, setPage] = useState(0)
   const [values, setValues] = useState({})
-  const classes = useStyles()
+  const lastPage = isLastPage(page, props.steps.length)
+  const penultimate = isLastPage(page + 1, props.steps.length)
 
   useEffect(() => {
     if (props.initialValues) {
@@ -87,29 +75,27 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     return component({ ...restProps, updateInitialProps: setValues })
   }
 
-  const validate = (values) => {
+  const validate = (values: V) => {
     const { children } = props
 
     const activePage: any = React.Children.toArray(children)[page]
     return activePage.props.validate ? activePage.props.validate(values) : {}
   }
 
-  const next = (formValues) => {
+  const next = async (formValues: V) => {
     const { children } = props
     const activePageProps = getPageProps(children, page)
     const { prepareNextInitialProps } = activePageProps
 
     let pageInitialProps
-    // if (prepareNextInitialProps) {
-    //   pageInitialProps = await prepareNextInitialProps(formValues)
-    // }
+    if (prepareNextInitialProps) {
+      pageInitialProps = await prepareNextInitialProps(formValues)
+    }
 
     const finalValues = { ...formValues, ...pageInitialProps }
 
     setValues(finalValues)
     setPage(Math.min(page + 1, React.Children.count(children) - 1))
-
-    // await sleep(5000)
   }
 
   const previous = () => {
@@ -121,10 +107,9 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     return setPage(Math.max(page - 1, 0))
   }
 
-  const handleSubmit = async (formValues) => {
-    const { children, onSubmit } = props
-    const isLastPage = page === React.Children.count(children) - 1
-    if (isLastPage) {
+  const handleSubmit = async (formValues: V) => {
+    const { onSubmit } = props
+    if (lastPage) {
       return onSubmit(formValues)
     }
     await next(formValues)
@@ -134,9 +119,6 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
   const activePage = getActivePageFrom(children)
 
-  const lastPage = isLastPage(page, props.steps.length)
-  const penultimate = isLastPage(page + 1, props.steps.length)
-
   return (
     <GnoForm
       formMutators={mutators}
@@ -145,68 +127,14 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
       testId={testId}
       validation={validate}
     >
-      {(submitting, validating, ...rest) => {
-        console.log({ submitting, rest })
-        if (typeof submitting === 'undefined') {
-          return <div />
-        }
-
-        const disabled = disabledWhenValidating ? submitting || validating : submitting
-        const controls = (
-          <>
-            <Hairline />
-            <Controls
-              buttonLabels={buttonLabels}
-              currentStep={page}
-              disabled={disabled}
-              firstPage={page === 0}
-              lastPage={lastPage}
-              onPrevious={previous}
-              penultimate={penultimate}
-            />
-          </>
-        )
-
-        return (
-          <Stepper activeStep={page} classes={{ root: classes.root }} orientation="vertical">
-            {steps.map((label, index) => {
-              const labelProps: any = {}
-              const isClickable = index < page
-
-              if (isClickable) {
-                labelProps.onClick = () => {
-                  setPage(index)
-                }
-                labelProps.className = classes.pointerCursor
-              }
-              console.log('step render')
-              return (
-                <FormStep key={label}>
-                  <StepLabel {...labelProps}>{label}</StepLabel>
-                  <StepContent TransitionProps={transitionProps}>{activePage(controls, ...rest)}</StepContent>
-                </FormStep>
-              )
-            })}
-          </Stepper>
-        )
-      }}
+      <StepperContent
+        disabledWhenValidating={disabledWhenValidating}
+        buttonLabels={buttonLabels}
+        onPageChange={setPage}
+        steps={steps}
+      />
     </GnoForm>
   )
 }
-
-const useStyles = makeStyles({
-  root: {
-    flex: '1 1 auto',
-    backgroundColor: 'transparent',
-  },
-  pointerCursor: {
-    '& > .MuiStepLabel-iconContainer': {
-      cursor: 'pointer',
-    },
-    '& > .MuiStepLabel-labelContainer': {
-      cursor: 'pointer',
-    },
-  },
-})
 
 export default GnoStepper

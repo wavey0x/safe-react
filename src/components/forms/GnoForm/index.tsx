@@ -23,15 +23,10 @@ const GnoForm = ({
     initialValues={initialValues}
     mutators={formMutators}
     onSubmit={onSubmit}
-    render={({ handleSubmit, values }) => (
+    render={({ handleSubmit }) => (
       <form
         data-testid={testId}
-        onSubmit={async (e) => {
-          handleSubmit(e)?.then(() => {
-            console.log('submit finished')
-            next(values)
-          })
-        }}
+        onSubmit={handleSubmit}
         style={stylesBasedOn(padding)}
       >
         {children}

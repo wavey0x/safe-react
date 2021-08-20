@@ -60,7 +60,7 @@ const ReviewComponent = (props): ReactElement => {
 
   const names = getNamesFrom(values)
   const addresses = useMemo(() => {
-    console.log('calculating addresses') // logs 5 times
+    console.log('calculating addresses', { values }) // logs 5 times
     return getAccountsFrom(values)
   }, [values])
 

@@ -40,10 +40,11 @@ function StepperContent({
   onPrevious,
   activePage,
 }: Props): React.ReactElement {
-  const { submitting, submitSucceeded, validating, ...rest } = useFormState()
+  const formState = useFormState()
+  console.log({ formState })
   // const classes = useStyles()
-  console.log({ submitting, submitSucceeded })
-  const disabled = disabledWhenValidating ? submitting || validating : submitting
+
+  const disabled = disabledWhenValidating ? formState.submitting || formState.validating : formState.submitting
   const controls = (
     <>
       <Hairline />
@@ -62,19 +63,19 @@ function StepperContent({
   return (
     <Stepper activeStep={page} orientation="vertical">
       {steps.map((label, index) => {
-        const labelProps: { onClick?: () => void; className?: string } = {}
-        const isClickable = index < page
+        // const labelProps: { onClick?: () => void; className?: string } = {}
+        // const isClickable = index < page
 
-        if (isClickable) {
-          labelProps.onClick = () => {
-            onPageChange(index)
-          }
-          // labelProps.className = classes.pointerCursor
-        }
+        // if (isClickable) {
+        //   labelProps.onClick = () => {
+        //     onPageChange(index)
+        //   }
+        //   // labelProps.className = classes.pointerCursor
+        // }
 
         return (
           <Step key={label}>
-            <StepLabel {...labelProps}>{label}</StepLabel>
+            <StepLabel>{label}</StepLabel>
             <StepContent TransitionProps={transitionProps}>{activePage(controls)}</StepContent>
           </Step>
         )

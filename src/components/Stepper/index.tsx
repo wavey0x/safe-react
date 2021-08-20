@@ -81,32 +81,18 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   }
 
   const next = async (formValues: V) => {
-    const { children } = props
-    const activePageProps = getPageProps(children, page)
-    const { prepareNextInitialProps } = activePageProps
-
-    let pageInitialProps
-    if (prepareNextInitialProps) {
-      pageInitialProps = await prepareNextInitialProps(formValues)
-    }
-
-    const finalValues = { ...formValues, ...pageInitialProps }
     unstable_batchedUpdates(() => {
-      setValues(finalValues)
-      handlePageChange('forward')()
+      setValues(formValues)
+      setPage(Math.min(page + 1, React.Children.count(children) - 1))
     })
   }
 
-  const handlePageChange = (type: 'forward' | 'back') => () => {
-    if (type === 'forward') setPage(Math.min(page + 1, React.Children.count(children) - 1))
-
-    if (type === 'back') {
-      const firstPage = page === 0
-      if (firstPage) {
-        return history.goBack()
-      } else {
-        setPage(Math.max(page - 1, 0))
-      }
+  const goBack = () => {
+    const firstPage = page === 0
+    if (firstPage) {
+      return history.goBack()
+    } else {
+      setPage(Math.max(page - 1, 0))
     }
   }
 
@@ -115,7 +101,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     if (lastPage) {
       return onSubmit(formValues)
     }
-    // await next(formValues)
+    next(formValues)
   }
 
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
@@ -138,7 +124,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
         penultimate={penultimate}
         page={page}
         lastPage={lastPage}
-        onPrevious={handlePageChange('back')}
+        onPrevious={goBack}
         activePage={activePage}
       />
     </GnoForm>

@@ -75,7 +75,7 @@ function StepperContent({
         return (
           <Step key={label}>
             <StepLabel {...labelProps}>{label}</StepLabel>
-            <StepContent TransitionProps={transitionProps}>{activePage(controls, rest)}</StepContent>
+            <StepContent TransitionProps={transitionProps}>{activePage(controls)}</StepContent>
           </Step>
         )
       })}

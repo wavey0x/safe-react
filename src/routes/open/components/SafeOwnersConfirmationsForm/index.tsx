@@ -36,11 +36,11 @@ import {
   getOwnerAddressBy,
   getOwnerNameBy,
 } from 'src/routes/open/components/fields'
-import { getAccountsFrom } from 'src/routes/open/utils/safeDataExtractor'
+import { CreateSafeValues, getAccountsFrom } from 'src/routes/open/utils/safeDataExtractor'
 import { useSelector } from 'react-redux'
 import { currentNetworkAddressBook } from 'src/logic/addressBook/store/selectors'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
-import { useForm } from 'react-final-form'
+import { useForm, useFormState } from 'react-final-form'
 
 const { useState } = React
 
@@ -112,10 +112,10 @@ export const calculateValuesAfterRemoving = (index: number, values: Record<strin
 
 const useStyles = makeStyles(styles)
 
-const SafeOwnersForm = (props): React.ReactElement => {
-  const { errors, values } = props
+const SafeOwnersForm = (): React.ReactElement => {
   const classes = useStyles()
   const form = useForm()
+  const { errors, values } = useFormState<CreateSafeValues>()
   const validOwners = getNumOwnersFrom(values)
   const addressBook = useSelector(currentNetworkAddressBook)
 
@@ -133,6 +133,7 @@ const SafeOwnersForm = (props): React.ReactElement => {
   }
 
   const onRemoveRow = (index) => () => {
+    // @ts-expect-error fdsf
     const initialValues = calculateValuesAfterRemoving(index, values)
     form.reset(initialValues)
 
@@ -216,7 +217,7 @@ const SafeOwnersForm = (props): React.ReactElement => {
                   // eslint-disable-next-line
                   // @ts-ignore
                   inputAdornment={
-                    noErrorsOn(addressName, errors) && {
+                    noErrorsOn(addressName, errors || {}) && {
                       endAdornment: (
                         <InputAdornment position="end">
                           <CheckCircle className={classes.check} data-testid={`valid-address-${index}`} />
@@ -291,11 +292,11 @@ const SafeOwnersForm = (props): React.ReactElement => {
 }
 
 export const SafeOwnersPage = () =>
-  function OpenSafeOwnersPage(controls, { errors, form, values }) {
+  function OpenSafeOwnersPage(controls) {
     return (
       <>
         <OpenPaper controls={controls} padding={false}>
-          <SafeOwnersForm errors={errors} form={form} otherAccounts={getAccountsFrom(values)} values={values} />
+          <SafeOwnersForm />
         </OpenPaper>
       </>
     )

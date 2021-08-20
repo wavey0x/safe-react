@@ -1,5 +1,6 @@
-import TableContainer from '@material-ui/core/TableContainer'
 import React, { ReactElement, useMemo, useRef, useEffect } from 'react'
+import TableContainer from '@material-ui/core/TableContainer'
+import { useFormState } from 'react-final-form'
 import { getExplorerInfo, getNetworkInfo } from 'src/config'
 import Block from 'src/components/layout/Block'
 import Col from 'src/components/layout/Col'
@@ -18,14 +19,6 @@ import { FIELD_CONFIRMATIONS, FIELD_NAME, getNumOwnersFrom } from '../fields'
 import { useStyles } from './styles'
 import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import { useEstimateSafeCreationGas } from 'src/logic/hooks/useEstimateSafeCreationGas'
-import { FormApi } from 'final-form'
-import { StepperPageFormProps } from 'src/components/Stepper'
-import { LoadFormValues } from 'src/routes/load/container/Load'
-
-type ReviewComponentProps = {
-  values: LoadFormValues
-  form: FormApi
-}
 
 const { nativeCoin } = getNetworkInfo()
 function useWhyDidYouUpdate(name, props) {
@@ -59,8 +52,8 @@ function useWhyDidYouUpdate(name, props) {
   })
 }
 
-const ReviewComponent = (props: ReviewComponentProps): ReactElement => {
-  const { values } = props
+const ReviewComponent = (props): ReactElement => {
+  const { values } = useFormState<CreateSafeValues>()
   const classes = useStyles()
   // debugger
   useWhyDidYouUpdate('ReviewComponent', props)
@@ -156,12 +149,10 @@ const ReviewComponent = (props: ReviewComponentProps): ReactElement => {
 }
 
 export const Review = () =>
-  function ReviewPage(controls: React.ReactNode, props: StepperPageFormProps): React.ReactElement {
+  function ReviewPage(controls: React.ReactNode): React.ReactElement {
     return (
-      <>
-        <OpenPaper controls={controls} padding={false}>
-          <ReviewComponent {...props} />
-        </OpenPaper>
-      </>
+      <OpenPaper controls={controls} padding={false}>
+        <ReviewComponent />
+      </OpenPaper>
     )
   }

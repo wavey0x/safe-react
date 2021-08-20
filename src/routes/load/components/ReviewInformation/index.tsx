@@ -1,6 +1,7 @@
 import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import TableContainer from '@material-ui/core/TableContainer'
-import React, { Fragment, ReactElement, ReactNode } from 'react'
+import { Fragment, ReactElement, ReactNode } from 'react'
+import { useFormState } from 'react-final-form'
 
 import { getExplorerInfo } from 'src/config'
 import Block from 'src/components/layout/Block'
@@ -30,11 +31,11 @@ const checkIfUserAddressIsAnOwner = (values: LoadFormValues, userAddress: string
 
 interface Props {
   userAddress: string
-  values: LoadFormValues
 }
 
-const ReviewComponent = ({ userAddress, values }: Props): ReactElement => {
+const ReviewComponent = ({ userAddress }: Props): ReactElement => {
   const classes = useStyles()
+  const { values } = useFormState<LoadFormValues>()
   const isOwner = checkIfUserAddressIsAnOwner(values, userAddress)
   const owners = getAccountsFrom(values)
   const safeAddress = values[FIELD_LOAD_ADDRESS]
@@ -126,10 +127,10 @@ const ReviewComponent = ({ userAddress, values }: Props): ReactElement => {
 }
 
 const Review = ({ userAddress }: { userAddress: string }) =>
-  function ReviewPage(controls: ReactNode, { values }: { values: LoadFormValues }): ReactElement {
+  function ReviewPage(controls: ReactNode): ReactElement {
     return (
       <OpenPaper controls={controls} padding={false}>
-        <ReviewComponent userAddress={userAddress} values={values} />
+        <ReviewComponent userAddress={userAddress} />
       </OpenPaper>
     )
   }

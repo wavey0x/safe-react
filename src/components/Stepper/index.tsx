@@ -5,6 +5,7 @@ import GnoForm from 'src/components/forms/GnoForm'
 import { history } from 'src/store'
 import { LoadFormValues } from 'src/routes/load/container/Load'
 import { StepperContent } from './StepperContent'
+import { unstable_batchedUpdates } from 'react-dom'
 export interface StepperPageFormProps {
   values: LoadFormValues
   errors: Record<string, string>
@@ -90,9 +91,10 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     }
 
     const finalValues = { ...formValues, ...pageInitialProps }
-
-    setValues(finalValues)
-    handlePageChange('forward')()
+    unstable_batchedUpdates(() => {
+      setValues(finalValues)
+      handlePageChange('forward')()
+    })
   }
 
   const handlePageChange = (type: 'forward' | 'back') => () => {

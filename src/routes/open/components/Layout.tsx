@@ -105,7 +105,7 @@ export const Layout = (props: LayoutProps): React.ReactElement => {
 
   const steps = getSteps()
 
-  const initialValues = useInitialValuesFrom(userAccount, safeProps)
+  // const initialValues = useInitialValuesFrom(userAccount, safeProps)
 
   if (!provider) {
     return <WelcomeLayout isOldMultisigMigration />
@@ -122,7 +122,7 @@ export const Layout = (props: LayoutProps): React.ReactElement => {
         </Heading>
       </Row>
       <Stepper
-        initialValues={initialValues}
+        // initialValues={initialValues}
         mutators={formMutators}
         onSubmit={onCallSafeContractSubmit}
         steps={steps}

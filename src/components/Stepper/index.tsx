@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { FormApi } from 'final-form'
 
 import GnoForm from 'src/components/forms/GnoForm'
@@ -70,7 +70,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
     const activePageProps = getPageProps(pages, page)
     const { component, ...restProps } = activePageProps
 
-    return component({ ...restProps, updateInitialProps: setValues })
+    return component({ ...restProps })
   }
 
   const validate = (values: V) => {
@@ -105,7 +105,7 @@ function GnoStepper<V>(props: GnoStepperProps<V>): React.ReactElement {
   }
 
   const { buttonLabels, children, disabledWhenValidating = false, mutators, steps, testId } = props
-  const activePage = getActivePageFrom(children, page)
+  const activePage = useMemo(() => getActivePageFrom(children, page), [page])
 
   return (
     <GnoForm

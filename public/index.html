@@ -6,6 +6,17 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Gnosis Safe</title>
+
+    <script>
+      // Redirect https://<chain>.gnosis-safe.io to https://.gnosis-safe.io
+      (function () {
+        const LEGACY_HOST_RE = /-?(rinkeby|xdai|arbitrum|ewc|volta|polygon|bsc)(?=\.)/
+        if (LEGACY_HOST_RE.test(window.location.host)) {
+          const newUrl = window.location.href.replace(LEGACY_HOST_RE, '')
+          window.location.replace(newUrl)
+        }
+      }())
+    </script>
   </head>
   <style>
     .safe-preloader-animation {

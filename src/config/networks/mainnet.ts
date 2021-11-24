@@ -10,8 +10,8 @@ import { WALLETS } from 'src/config/networks/network.d'
 import { ETHGASSTATION_API_KEY, ETHERSCAN_API_KEY } from 'src/utils/constants'
 
 const baseConfig: EnvironmentSettings = {
-  clientGatewayUrl: 'https://safe-client.staging.gnosisdev.com/v1',
-  txServiceUrl: 'https://safe-transaction.mainnet.staging.gnosisdev.com/api/v1',
+  clientGatewayUrl: 'https://safe-client.gnosis.io/v1',
+  txServiceUrl: 'https://safe-client.gnosis.io/v1',
   gasPriceOracles: [
     {
       url: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`,

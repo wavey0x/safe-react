@@ -55,7 +55,7 @@ Once done, you'll need to restart the app if it's already running.
 Install dependencies for the project:
 
 ```
-yarn install
+yarn install --ignore-engines
 ```
 
 To use the Rinkeby services:
